@@ -111,6 +111,12 @@ footer a:hover{color:#999}
   <div class="result-grid" id="results"></div>
 </div>
 
+<!-- Timezone Converter -->
+<div class="converter" id="tzSection">
+  <h2>Timezone Converter</h2>
+  <div class="result-grid" id="tzGrid" style="grid-template-columns:1fr 1fr 1fr"></div>
+</div>
+
 <!-- Time Diff -->
 <div class="diff-section">
   <h2>Time Difference</h2>
@@ -132,7 +138,7 @@ footer a:hover{color:#999}
 
 <footer>
   <a href="https://github.com/yurukusa/timestamp-tool">GitHub</a> ·
-  Part of <a href="https://yurukusa.github.io/dev-toolkit/">Dev Toolkit</a> (20 free tools)
+  Part of <a href="https://yurukusa.github.io/dev-toolkit/">Dev Toolkit</a>
 </footer>
 
 <script>
@@ -234,6 +240,9 @@ function convert(){
       <div class="value">${c.value}</div>
     </div>
   `).join('');
+
+  // Timezone converter
+  updateTz(date);
 }
 
 function calcDiff(){
@@ -276,6 +285,30 @@ function copyText(text){
   el.className='copied';el.textContent='Copied!';
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1600);
+}
+
+const ZONES=[
+  {label:'UTC',tz:'UTC'},
+  {label:'US East (EST/EDT)',tz:'America/New_York'},
+  {label:'US West (PST/PDT)',tz:'America/Los_Angeles'},
+  {label:'London (GMT/BST)',tz:'Europe/London'},
+  {label:'Central Europe (CET)',tz:'Europe/Berlin'},
+  {label:'Japan (JST)',tz:'Asia/Tokyo'},
+  {label:'China (CST)',tz:'Asia/Shanghai'},
+  {label:'India (IST)',tz:'Asia/Kolkata'},
+  {label:'Australia (AEST)',tz:'Australia/Sydney'},
+];
+
+function updateTz(date){
+  const grid=$('tzGrid');
+  if(!date||isNaN(date.getTime())){grid.innerHTML='';return}
+  grid.innerHTML=ZONES.map(z=>{
+    const fmt=date.toLocaleString('en-US',{timeZone:z.tz,weekday:'short',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    return `<div class="result-card" onclick="copyText('${fmt.replace(/'/g,"\\'")}')">
+      <div class="label">${z.label}</div>
+      <div class="value">${fmt}</div>
+    </div>`;
+  }).join('');
 }
 
 // Init
